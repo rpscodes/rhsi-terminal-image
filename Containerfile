@@ -13,7 +13,7 @@ FROM registry.redhat.io/devspaces/udi-rhel8:3.8
 
 ENV CAMELK_VERSION=1.10.0
 ENV JBANG_VERSION=0.108.0
-ENV SKUPPER_VERSION=1.4.1
+ENV SKUPPER_VERSION=1.4.2-1
 ENV TKN_VERSION=1.11.0
 ENV KN_VERSION=1.8.1
 
@@ -22,7 +22,8 @@ USER root
 ADD RPMS /tmp/install
 
 # Install skupper
-RUN dnf install -y /tmp/install/skupper-cli-1.4.2-1.el8.x86_64.rpm
+RUN dnf install -y /tmp/install/skupper-cli-${SKUPPER_VERSION}.el8.x86_64.rpm && \
+    dnf clean all
 
 # Install kamel
 RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/camel-k/${CAMELK_VERSION}/camel-k-client-${CAMELK_VERSION}-linux-64bit.tar.gz \
@@ -34,7 +35,7 @@ RUN wget https://github.com/jbangdev/jbang/releases/download/v${JBANG_VERSION}/j
 
 # Install Knative
 RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/serverless/${KN_VERSION}/kn-linux-amd64.tar.gz \
-    -O - | tar -xz -C /usr/local/bin
+    -O - | tar -xz -C /usr/local/bin && mv /usr/local/bin/kn-linux-amd64 /usr/local/bin/kn
 
 # Install Tekton
 RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/pipeline/${TKN_VERSION}/tkn-linux-amd64.tar.gz \
