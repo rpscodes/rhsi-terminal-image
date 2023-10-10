@@ -1,5 +1,5 @@
 # kcat builder
-FROM registry.redhat.io/devspaces/udi-rhel8:3.6 AS kafkacat
+FROM registry.redhat.io/devspaces/udi-rhel8:3.8 AS kafkacat
 USER root
 RUN dnf -y install gcc which gcc-c++ wget make git cmake
 ENV KCAT_VERSION=1.7.0
@@ -9,7 +9,7 @@ RUN cd /tmp && git clone https://github.com/edenhill/kcat -b $KCAT_VERSION --sin
     ./bootstrap.sh
 
 # main image
-FROM registry.redhat.io/devspaces/udi-rhel8:3.6
+FROM registry.redhat.io/devspaces/udi-rhel8:3.8
 
 ENV CAMELK_VERSION=1.10.0
 ENV JBANG_VERSION=0.108.0
@@ -19,9 +19,10 @@ ENV KN_VERSION=1.8.1
 
 USER root
 
+ADD RPMS /tmp/install
+
 # Install skupper
-RUN wget https://github.com/skupperproject/skupper/releases/download/${SKUPPER_VERSION}/skupper-cli-${SKUPPER_VERSION}-linux-amd64.tgz \
-    -O - | tar -xz -C /usr/local/bin/
+RUN dnf install -y /tmp/install/skupper-cli-1.4.2-1.el8.x86_64.rpm
 
 # Install kamel
 RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/camel-k/${CAMELK_VERSION}/camel-k-client-${CAMELK_VERSION}-linux-64bit.tar.gz \
