@@ -25,40 +25,14 @@ ADD RPMS /tmp/install
 RUN dnf install -y /tmp/install/skupper-cli-${SKUPPER_VERSION}.el8.x86_64.rpm && \
     dnf clean all
 
-# Install kamel
-RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/camel-k/${CAMELK_VERSION}/camel-k-client-${CAMELK_VERSION}-linux-64bit.tar.gz \
-    -O - | tar -xz -C /usr/local/bin/
 
-# Install JBang
-RUN wget https://github.com/jbangdev/jbang/releases/download/v${JBANG_VERSION}/jbang.tar \
-    -O - | tar -x --strip 2 -C /usr/local/bin jbang/bin/jbang
-
-# Install Knative
-RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/serverless/${KN_VERSION}/kn-linux-amd64.tar.gz \
-    -O - | tar -xz -C /usr/local/bin && mv /usr/local/bin/kn-linux-amd64 /usr/local/bin/kn
-
-# Install Tekton
-RUN wget https://mirror.openshift.com/pub/openshift-v4/clients/pipeline/${TKN_VERSION}/tkn-linux-amd64.tar.gz \
-    -O - | tar -xz -C /usr/local/bin
 
 # Install httpie
 RUN wget https://packages.httpie.io/binaries/linux/http-latest -O /usr/local/bin/http && \
     ln -s /usr/local/bin/http /usr/local/bin/https && \ 
     chmod +x /usr/local/bin/http
 
-# Install database clients and utils
-RUN curl https://packages.microsoft.com/config/rhel/8/prod.repo > /etc/yum.repos.d/msprod.repo && \ 
-    ACCEPT_EULA=Y dnf install -y mssql-tools unixODBC-devel && \
-    dnf install -y postgresql-devel python36-devel && \
-    dnf clean all && \
-    ln -s /opt/mssql-tools/bin/sqlcmd /usr/local/bin/sqlcmd
-RUN source /home/user/.venv/bin/activate && \
-    pip3 install --upgrade pip && \
-    pip3 install setuptools-rust pgcli mycli
 
-# Kafkacat from build
-COPY --from=kafkacat /tmp/kcat/kcat /usr/local/bin/kcat
-RUN ln -s /usr/bin/kcat /usr/local/bin/kafkacat
 
 # Licenses
 RUN mkdir /licenses
